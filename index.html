@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Birthday Surprise for Prajna</title>
+  <title>Birthday Surprise for Boss</title>
   <style>
     body {
       margin: 0;
@@ -12,105 +12,76 @@
       overflow: hidden;
       font-family: 'Segoe UI', sans-serif;
       color: white;
+      transition: transform 4s ease-in-out;
     }
-
     canvas {
       position: absolute;
       top: 0;
       left: 0;
       z-index: 0;
     }
-
+    #moon {
+      position: absolute;
+      width: 120px; height: 120px;
+      border-radius: 50%; 
+      background: radial-gradient(circle at 30% 30%, #ddd, #aaa);
+      box-shadow: 0 0 40px 10px #ddd;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+      opacity: 1;
+      transition: top 2s ease-in-out;
+    }
     .message {
       position: absolute;
-      top: 20%;
+      top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 2.5em;
+      font-size: 3em;
       color: #fff;
       text-shadow: 0 0 10px #fff;
       opacity: 0;
       animation: fadeIn 3s ease-in-out forwards;
       z-index: 2;
     }
-
+    .popup {
+      position: absolute;
+      top: 60%; left: 50%; transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 10px;
+      border: 2px solid white;
+      box-shadow: 0 0 20px #fff, 0 0 40px gold;
+      display: none;
+      animation: glowBox 1s ease-in-out infinite alternate;
+      text-align: center;
+      color: black;
+      z-index: 5;
+    }
+    .popup button, .channel-btn, .next-btn, .begin-btn, .final-btn {
+      display: block;
+      margin: 20px auto 0;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: gold;
+      color: black;
+      border: none;
+      border-radius: 5px;
+      box-shadow: 0 0 10px gold;
+      animation: glowBox 1s ease-in-out infinite alternate;
+    }
     .story {
       display: none;
       position: absolute;
-      top: 40%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 90%;
-      max-width: 700px;
-      font-size: 1.4em;
+      top: 40%; left: 50%; transform: translate(-50%, -50%);
+      font-size: 1.5em;
       line-height: 1.8;
       text-align: center;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 20px;
-      border-radius: 10px;
-      z-index: 5;
-    }
-
-    .dob-boxes {
-      position: fixed;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      z-index: 6;
-    }
-
-    .dob-boxes span {
-      background: #222;
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-size: 1em;
-      color: #ffcc70;
-      font-weight: bold;
-      box-shadow: 0 0 5px rgba(255,255,255,0.3);
-    }
-
-    @keyframes fadeIn {
-      to {
-        opacity: 1;
-      }
-    }
-
-    .popup {
-      display: none;
-      position: absolute;
-      top: 60%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: black;
       color: white;
-      padding: 30px;
-      border-radius: 10px;
-      text-align: center;
       z-index: 5;
-      border: 2px solid white;
-      box-shadow: 0 0 15px white;
     }
-
-    .popup button {
-      padding: 10px 20px;
-      margin: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      border-radius: 5px;
-      background-color: white;
-      color: black;
-      box-shadow: 0 0 10px gold;
-      transition: box-shadow 0.3s ease;
-    }
-
-    .popup button:hover {
-      box-shadow: 0 0 20px #ffd700;
-    }
-
     .birthday-msg {
       display: none;
       position: absolute;
@@ -122,165 +93,226 @@
       color: gold;
       text-align: center;
       z-index: 6;
+      animation: glowText 1s ease-in-out infinite alternate;
     }
-
-    .spark {
+    .next-btn, .begin-btn, .final-btn {
       position: absolute;
-      width: 4px;
-      height: 4px;
-      background: gold;
-      border-radius: 50%;
-      opacity: 1;
-      animation: sparkle 1s ease-out forwards;
+      top: 50%;
+      right: 5%;
       z-index: 7;
-      pointer-events: none;
+      display: none;
     }
-
-    @keyframes sparkle {
-      to {
-        transform: scale(3);
-        opacity: 0;
-      }
+    .dob-boxes {
+      display: none;
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      gap: 15px;
+      flex-wrap: wrap;
+      z-index: 6;
+      display: flex;
+    }
+    .dob-boxes span {
+      background: #222;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1em;
+      color: #ffcc70;
+      font-weight: bold;
+      box-shadow: 0 0 5px rgba(255,255,255,0.3);
+    }
+    .dob-header {
+      display: none;
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.2em;
+      color: #ffcc70;
+      font-weight: bold;
+      z-index: 6;
+    }
+    @keyframes fadeIn { to { opacity: 1; } }
+    @keyframes glowBox {
+      from { box-shadow: 0 0 10px #fff, 0 0 20px gold; }
+      to { box-shadow: 0 0 20px #fff, 0 0 40px gold; }
+    }
+    @keyframes glowText {
+      from { text-shadow: 0 0 10px gold, 0 0 20px #fff; }
+      to { text-shadow: 0 0 20px gold, 0 0 40px #ff0; }
     }
   </style>
 </head>
 <body>
-<canvas id="stars"></canvas>
+  <canvas id="stars"></canvas>
+  <div class="message" id="greetMsg">Hi Boss ✨</div>
+  <div id="moon"></div>
+  <div class="popup" id="popupBox">
+    <p>Kripya krke niche diye button ko dabaye (Please press the button below)</p>
+    <button onclick="startSurprise()">Let's Go</button>
+  </div>
+  <div class="birthday-msg" id="birthdayMsg">🎉 HAPPYYYYY BIRTHDAYYYYYYYYYYY 🎂</div>
+  <button class="begin-btn" id="beginBtn">Aage Chalo</button>
+  <button class="next-btn" id="nextBtn">Next</button>
+  <button class="final-btn" id="finalBtn" onclick="startStory()">LOL YEH FINAL HAI NOW CLICK</button>
+  <div class="story" id="story"><p id="storyLine"></p></div>
+  <div class="dob-header" id="dobHeader">The world just got luckier since -</div>
+  <div class="dob-boxes" id="dobTimer"></div>
+  <script>
+    const canvas = document.getElementById('stars');
+    const ctx = canvas.getContext('2d');
 
-<div class="message" id="greetMsg">Hi Prajna ✨</div>
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
 
-<div class="popup" id="popupBox">
-  <p>Are you ready for a surprise? 🎁</p>
-  <button onclick="startSurprise()">Let's Go</button>
-</div>
+    const stars = [];
+    for (let i = 0; i < 100; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 1.5 + 0.5,
+        dx: Math.random() * 0.5 - 0.25,
+        dy: Math.random() * 1 + 0.5
+      });
+    }
 
-<div class="story" id="story"><p id="storyLine"></p></div>
+    let animateStars = false;
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#fff';
+      stars.forEach(star => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fill();
+        if (animateStars) {
+          star.x += star.dx;
+          star.y += star.dy;
+          if (star.y > canvas.height) star.y = 0;
+          if (star.x < 0 || star.x > canvas.width) star.x = Math.random() * canvas.width;
+        }
+      });
+      requestAnimationFrame(drawStars);
+    }
+    drawStars();
 
-<div class="birthday-msg" id="birthdayMsg">🎉 HAPPYYYYY BIRTHDAYYYYYYYYYYY 🎂</div>
+    setTimeout(() => {
+      document.getElementById('greetMsg').style.display = 'none';
+      document.getElementById('popupBox').style.display = 'block';
+    }, 3000);
 
-<div class="dob-boxes" id="dobTimer"></div>
+    function startSurprise() {
+      animateStars = true;
+      document.getElementById('popupBox').style.display = 'none';
+      document.getElementById('birthdayMsg').style.display = 'block';
+      const beginBtn = document.getElementById('beginBtn');
+      beginBtn.style.display = 'block';
+      beginBtn.style.top = '50%';
+      beginBtn.style.right = '5%';
+      document.getElementById('dobTimer').style.display = 'flex';
+      document.getElementById('dobHeader').style.display = 'block';
+      document.getElementById('moon').style.top = '40px';
+      updateAgeTimer();
+      setInterval(updateAgeTimer, 1000);
+    }
 
-<script>
-  const canvas = document.getElementById('stars');
-  const ctx = canvas.getContext('2d');
+    function updateAgeTimer() {
+      const dob = new Date('2003-07-27T00:00:00');
+      const now = new Date();
+      const diff = now - dob;
+      const seconds = Math.floor(diff / 1000) % 60;
+      const minutes = Math.floor(diff / (1000 * 60)) % 60;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const years = Math.floor(days / 365.25);
+      const months = Math.floor((days % 365.25) / 30.44);
+      const remainingDays = Math.floor((days % 365.25) % 30.44);
+      document.getElementById('dobTimer').innerHTML = `
+        <span>${years} Years</span>
+        <span>${months} Months</span>
+        <span>${remainingDays} Days</span>
+        <span>${minutes} Min</span>
+        <span>${seconds} Sec</span>`;
+    }
 
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
+    function randomPosition(element) {
+      const maxX = window.innerWidth - 100;
+      const maxY = window.innerHeight - 100;
+      const x = Math.floor(Math.random() * maxX);
+      const y = Math.floor(Math.random() * maxY);
+      element.style.left = `${x}px`;
+      element.style.top = `${y}px`;
+    }
 
-  const stars = [];
-  for (let i = 0; i < 150; i++) {
-    stars.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      radius: Math.random() * 1.5,
-      dx: (Math.random() - 0.5) * 0.5,
-      dy: (Math.random() - 0.5) * 0.5
+    function jumpAndFall(button, nextCallback) {
+      let count = 5;
+      function jump() {
+        if (count-- > 0) {
+          setTimeout(() => randomPosition(button), 500);
+          setTimeout(jump, 800);
+        } else {
+          button.style.transition = 'top 1s ease-in';
+          button.style.top = '100%';
+          setTimeout(() => {
+            button.style.display = 'none';
+            if (nextCallback) nextCallback();
+          }, 1000);
+        }
+      }
+      jump();
+    }
+
+    document.getElementById("beginBtn").addEventListener("click", () => {
+      jumpAndFall(document.getElementById("beginBtn"), () => {
+        const nextBtn = document.getElementById("nextBtn");
+        nextBtn.style.display = 'block';
+        nextBtn.style.top = '50%';
+        nextBtn.style.right = '5%';
+        nextBtn.addEventListener("click", function handler() {
+          nextBtn.removeEventListener("click", handler);
+          jumpAndFall(nextBtn, () => {
+            const finalBtn = document.getElementById("finalBtn");
+            finalBtn.style.display = 'block';
+            finalBtn.style.top = '50%';
+            finalBtn.style.right = '5%';
+          });
+        });
+      });
     });
-  }
 
-  function drawStars() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#fff';
-    stars.forEach(star => {
-      ctx.beginPath();
-      ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-      ctx.fill();
-      star.x += star.dx;
-      star.y += star.dy;
-      if (star.x < 0 || star.x > canvas.width) star.dx *= -1;
-      if (star.y < 0 || star.y > canvas.height) star.dy *= -1;
-    });
-    requestAnimationFrame(drawStars);
-  }
-  drawStars();
+    function startStory() {
+      document.getElementById('birthdayMsg').style.display = 'none';
+      document.getElementById('finalBtn').style.display = 'none';
+      document.getElementById('story').style.display = 'block';
+      showStoryLines();
+    }
 
-  setTimeout(() => {
-    document.getElementById('greetMsg').style.display = 'none';
-    document.getElementById('popupBox').style.display = 'block';
-  }, 3000);
+    const storyLines = [
+      "On this day, something magical happened — you entered the world.",
+      "You’re the kind of soul who makes people feel seen, heard, and cared for.",
+      "Strong-willed yet endlessly kind, you balance charm with mischief.",
+      "Your laugh? Contagious. Your presence? Irreplaceable.",
+      "A beautiful mind with a fiercely loyal heart.",
+      "Not perfect — but perfectly yourself, and that’s what makes you so loved.",
+      "So here’s to you — for being unapologetically, wonderfully you."
+    ];
 
-  function startSurprise() {
-    document.getElementById('popupBox').style.display = 'none';
-    document.getElementById('story').style.display = 'block';
-    showStoryLines();
-  }
-
-  const storyLines = [
-    "On this day, something magical happened — you entered the world.",
-    "From your earliest days, you carried warmth and wonder.",
-    "You’re the kind of soul who makes people feel seen, heard, and cared for.",
-    "Strong-willed yet endlessly kind, you balance charm with mischief.",
-    "Your laugh? Contagious. Your presence? Irreplaceable.",
-    "A beautiful mind with a fiercely loyal heart.",
-    "Not perfect — but perfectly yourself, and that’s what makes you so loved.",
-    "So here’s to you — for being unapologetically, wonderfully you."
-  ];
-
-  let storyIndex = 0;
-  function showStoryLines() {
-    if (storyIndex < storyLines.length) {
-      document.getElementById('storyLine').innerText = storyLines[storyIndex];
-      fireCrackers();
-      storyIndex++;
-      setTimeout(showStoryLines, 3500);
-    } else {
-      document.getElementById('storyLine').innerText = "Han toh chalo bohot english hogyi sab lines churai hai maine";
-      setTimeout(() => {
-        document.getElementById('storyLine').innerText = "Main baat yeh kiiii \n\n\nkiiiiiiiiiiiiiiiiiiiii";
+    let storyIndex = 0;
+    function showStoryLines() {
+      if (storyIndex < storyLines.length) {
+        document.getElementById('storyLine').innerText = storyLines[storyIndex++];
+        setTimeout(showStoryLines, 4000);
+      } else {
+        document.getElementById('storyLine').innerText = "Main baat yeh kiiii \n\n\n 1 saal aur umar badh gyi teri";
         setTimeout(() => {
           document.getElementById('story').style.display = 'none';
           document.getElementById('birthdayMsg').style.display = 'block';
-        }, 3000);
-      }, 3000);
+        }, 5000);
+      }
     }
-  }
-
-  function updateAgeTimer() {
-    const dob = new Date('2003-07-27T00:00:00');
-    const now = new Date();
-    const diff = now - dob;
-
-    const seconds = Math.floor(diff / 1000) % 60;
-    const minutes = Math.floor(diff / (1000 * 60)) % 60;
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const years = Math.floor(days / 365.25);
-    const months = Math.floor((days % 365.25) / 30.44);
-    const remainingDays = Math.floor((days % 365.25) % 30.44);
-
-    document.getElementById('dobTimer').innerHTML = `
-      <span>${years} Years</span>
-      <span>${months} Months</span>
-      <span>${remainingDays} Days</span>
-      <span>${minutes} Min</span>
-      <span>${seconds} Sec</span>`;
-  }
-  setInterval(updateAgeTimer, 1000);
-
-  function fireCrackers() {
-    burstSparks('left');
-    burstSparks('right');
-  }
-
-  function burstSparks(side) {
-    const baseX = side === 'left' ? 50 : window.innerWidth - 50;
-    const baseY = 100;
-    for (let i = 0; i < 20; i++) {
-      const spark = document.createElement('div');
-      spark.className = 'spark';
-      const angle = Math.random() * Math.PI * 2;
-      const distance = Math.random() * 60;
-      const x = baseX + Math.cos(angle) * distance;
-      const y = baseY + Math.sin(angle) * distance;
-      spark.style.left = `${x}px`;
-      spark.style.top = `${y}px`;
-      document.body.appendChild(spark);
-      setTimeout(() => spark.remove(), 1000);
-    }
-  }
-</script>
+  </script>
 </body>
 </html>
